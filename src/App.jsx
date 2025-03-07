@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import InitialScreen from "./InitialScreen";
 import SimulationScreen from "./SimulationScreen";
-
-/** Might be better if this comes from environment variables */
-const ALLOWED_ORIGINS = ["http://127.0.0.1:3000"];
+import originsConfig from "./config/origins";
 
 function useSimulationData() {
   const [characterId, setCharacterId] = useState(null);
@@ -12,7 +10,11 @@ function useSimulationData() {
 
   useEffect(() => {
     function listenForInitialization(event) {
-      if (!ALLOWED_ORIGINS.includes(event.origin)) {
+      const isEventOriginAllowed = originsConfig.ALLOWED_ORIGINS.includes(
+        event.origin
+      );
+
+      if (!isEventOriginAllowed) {
         alert(`Origin not allowed: ${event.origin}`);
 
         return;
