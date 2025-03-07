@@ -8,6 +8,9 @@ function SimulationScreen() {
   return <main>SimulationScreen</main>;
 }
 
+/** Might be better if this comes from environment variables */
+const ALLOWED_ORIGINS = ["http://127.0.0.1:3000"];
+
 function useSimulationData() {
   const [characterId, setCharacterId] = useState(null);
   const [personalityId, setPersonalityId] = useState(null);
@@ -17,16 +20,11 @@ function useSimulationData() {
     function listenForInitialization(event) {
       const messageData = JSON.parse(event.data);
 
-      alert(
-        JSON.stringify(
-          {
-            origin: event.origin,
-            messageData,
-          },
-          undefined,
-          2
-        )
-      );
+      if (!ALLOWED_ORIGINS.includes(event.origin)) {
+        alert(`Origin not allowed: ${event.origin}`);
+
+        return;
+      }
 
       setCharacterId(messageData.characterId);
       setPersonalityId(messageData.personalityId);
