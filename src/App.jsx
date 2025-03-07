@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
 import InitialScreen from "./InitialScreen";
-
-function SimulationScreen() {
-  return <main>SimulationScreen</main>;
-}
+import SimulationScreen from "./SimulationScreen";
 
 /** Might be better if this comes from environment variables */
 const ALLOWED_ORIGINS = ["http://127.0.0.1:3000"];
