@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Initialization -->
+    <script type="module">
+      const iframe = document.querySelector("iframe");
+
+      const initializationData = {
+        type: "INITIALIZATION",
+        characterId: "000",
+        personalityId: "000",
+        environmentId: "000",
+      };
+
+      setTimeout(() => {
+        iframe?.contentWindow?.postMessage(
+          JSON.stringify(initializationData),
+          "http://localhost:5173"
+        );
+      }, 100);
+    </script>
+
+    <!-- Chatting -->
+    <script type="module">
+      const iframe = document.querySelector("iframe");
+
+      const form = document.querySelector("form");
+      const input = document.querySelector("input");
+
+      form?.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        iframe?.contentWindow?.postMessage(
+          input.value,
+          "http://localhost:5173" // Must be hard-coded for security!
+        );
+
+        form.reset();
+      });
+    </script>
+  </head>
+  <body class="h-screen grid grid-cols-2 gap-6 p-6">
+    <div class="border-2 border-red-500 p-3 space-y-3">
+      <p>Sample controlling iframe and passing data</p>
+
+      <form>
+        <input type="text" class="px-3 py-2 border-2 border-red-500" />
+
+        <button class="px-3 py-2 border-2 border-red-500">Send</button>
+      </form>
+    </div>
+
+    <div class="border-2 border-blue-500">
+      <iframe src="http://localhost:5173"></iframe>
+    </div>
+  </body>
+</html>

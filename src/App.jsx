@@ -1,5 +1,63 @@
+import { useEffect, useState } from "react";
+
+function InitialScreen() {
+  return <main>InitialScreen</main>;
+}
+
+function SimulationScreen() {
+  return <main>SimulationScreen</main>;
+}
+
+function useSimulationData() {
+  const [characterId, setCharacterId] = useState(null);
+  const [personalityId, setPersonalityId] = useState(null);
+  const [environmentId, setEnvironmentId] = useState(null);
+
+  useEffect(() => {
+    function listenForInitialization(event) {
+      const messageData = JSON.parse(event.data);
+
+      alert(
+        JSON.stringify(
+          {
+            origin: event.origin,
+            messageData,
+          },
+          undefined,
+          2
+        )
+      );
+
+      setCharacterId(messageData.characterId);
+      setPersonalityId(messageData.personalityId);
+      setEnvironmentId(messageData.environmentId);
+    }
+
+    window.addEventListener("message", listenForInitialization);
+
+    return () => window.removeEventListener("message", listenForInitialization);
+  }, []);
+
+  return { characterId, personalityId, environmentId };
+}
+
 function App() {
-  return "Hello, world!";
+  const { characterId, personalityId, environmentId } = useSimulationData();
+
+  const shouldStartSimulation =
+    characterId !== null && personalityId !== null && environmentId !== null;
+
+  if (shouldStartSimulation) {
+    return (
+      <SimulationScreen
+        characterId={characterId}
+        personalityId={personalityId}
+        environmentId={environmentId}
+      />
+    );
+  }
+
+  return <InitialScreen />;
 }
 
 export default App;
