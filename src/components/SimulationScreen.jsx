@@ -2,11 +2,9 @@ import { useEffect, useState } from "react";
 import sendToIframeParent from "../iframes/sendToIframeParent";
 import useIframeListener from "../iframes/useIframeListener";
 
-function useChats() {
-  const [chats, setChats] = useState([]);
+function useChatListener() {
   const [parentOrigin, setParentOrigin] = useState(null);
-
-  const mostRecentChat = chats.at(-1);
+  const [mostRecentChat, setMostRecentChat] = useState(null);
 
   useIframeListener((messageData, parentOrigin) => {
     const isValidMessage =
@@ -18,7 +16,7 @@ function useChats() {
       return;
     }
 
-    setChats((prevChats) => [...prevChats, messageData.value]);
+    setMostRecentChat(messageData.value);
     setParentOrigin(parentOrigin);
   });
 
@@ -31,12 +29,10 @@ function useChats() {
       value: `Sample AI response to: "${mostRecentChat}"`,
     });
   }, [parentOrigin, mostRecentChat]);
-
-  return chats;
 }
 
 function SimulationScreen({ characterId, personalityId, environmentId }) {
-  const chats = useChats();
+  useChatListener();
 
   return (
     <main>
@@ -45,16 +41,6 @@ function SimulationScreen({ characterId, personalityId, environmentId }) {
       <pre>
         {JSON.stringify({ characterId, personalityId, environmentId }, null, 2)}
       </pre>
-
-      <section>
-        <header>Messages:</header>
-
-        <ul>
-          {chats.map((chat, idx) => (
-            <li key={idx}>{chat}</li>
-          ))}
-        </ul>
-      </section>
     </main>
   );
 }

@@ -46,18 +46,34 @@
       const form = document.querySelector("form");
       const input = document.querySelector("input");
 
-      form?.addEventListener("submit", (event) => {
-        event.preventDefault();
+      const messageList = document.querySelector("ul");
 
+      function sendToSimulationIframe(message) {
         const chatData = {
           type: "CHAT",
-          value: input.value,
+          value: message,
         };
 
         iframe?.contentWindow?.postMessage(
           JSON.stringify(chatData),
           "http://localhost:5173" // Must be hard-coded for security!
         );
+      }
+
+      function addMessageToList(message) {
+        const listItem = document.createElement("li");
+        listItem.textContent = message;
+
+        messageList.appendChild(listItem);
+      }
+
+      form?.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const userMessage = input.value;
+
+        sendToSimulationIframe(userMessage);
+        addMessageToList(userMessage);
 
         form.reset();
       });
@@ -71,10 +87,11 @@
         if (!isValidMessage) return;
 
         const aiResponse = messageData.value;
-        alert(aiResponse);
+        addMessageToList(aiResponse);
       });
     </script>
   </head>
+
   <body class="h-screen grid grid-cols-2 gap-6 p-6">
     <div class="border-2 border-blue-500">
       <iframe src="http://localhost:5173" class="w-full h-full"></iframe>
@@ -88,6 +105,12 @@
 
         <button class="px-3 py-2 border-2 border-red-500">Send</button>
       </form>
+
+      <section>
+        <header>Messages:</header>
+
+        <ul></ul>
+      </section>
     </div>
   </body>
 </html>
