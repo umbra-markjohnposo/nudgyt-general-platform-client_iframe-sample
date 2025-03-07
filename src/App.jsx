@@ -7,9 +7,12 @@ function useSimulationData() {
   const [characterId, setCharacterId] = useState(null);
   const [personalityId, setPersonalityId] = useState(null);
   const [environmentId, setEnvironmentId] = useState(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     function listenForInitialization(event) {
+      if (isInitialized) return;
+
       const isEventOriginAllowed = originsConfig.ALLOWED_ORIGINS.includes(
         event.origin
       );
@@ -43,12 +46,13 @@ function useSimulationData() {
       setCharacterId(messageData.characterId);
       setPersonalityId(messageData.personalityId);
       setEnvironmentId(messageData.environmentId);
+      setIsInitialized(true);
     }
 
     window.addEventListener("message", listenForInitialization);
 
     return () => window.removeEventListener("message", listenForInitialization);
-  }, []);
+  }, [isInitialized]);
 
   return { characterId, personalityId, environmentId };
 }
