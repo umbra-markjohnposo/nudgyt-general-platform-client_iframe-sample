@@ -1,10 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import sendToIframeParent from "../iframes/sendToIframeParent";
 import useIframeListener from "../iframes/useIframeListener";
 
 function useChats() {
   const [chats, setChats] = useState([]);
+  const [parentOrigin, setParentOrigin] = useState(null);
 
-  useIframeListener((messageData) => {
+  const mostRecentChat = chats.at(-1);
+
+  useIframeListener((messageData, parentOrigin) => {
     const isValidMessage =
       messageData.type === "CHAT" && typeof messageData.value === "string";
 
@@ -15,7 +19,18 @@ function useChats() {
     }
 
     setChats((prevChats) => [...prevChats, messageData.value]);
+    setParentOrigin(parentOrigin);
   });
+
+  useEffect(() => {
+    if (mostRecentChat === undefined) return;
+    if (parentOrigin === null) return;
+
+    sendToIframeParent(parentOrigin, {
+      type: "AI_RESPONSE",
+      value: `Sample AI response to: "${mostRecentChat}"`,
+    });
+  }, [parentOrigin, mostRecentChat]);
 
   return chats;
 }

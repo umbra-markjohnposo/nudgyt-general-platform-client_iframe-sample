@@ -61,6 +61,18 @@
 
         form.reset();
       });
+
+      window.addEventListener("message", (event) => {
+        if (event.origin !== "http://localhost:5173") return;
+
+        const messageData = JSON.parse(event.data);
+
+        const isValidMessage = messageData.type === "AI_RESPONSE";
+        if (!isValidMessage) return;
+
+        const aiResponse = messageData.value;
+        alert(aiResponse);
+      });
     </script>
   </head>
   <body class="h-screen grid grid-cols-2 gap-6 p-6">
