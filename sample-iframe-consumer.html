@@ -36,8 +36,13 @@
       form?.addEventListener("submit", (event) => {
         event.preventDefault();
 
+        const chatData = {
+          type: "CHAT",
+          value: input.value,
+        };
+
         iframe?.contentWindow?.postMessage(
-          input.value,
+          JSON.stringify(chatData),
           "http://localhost:5173" // Must be hard-coded for security!
         );
 
