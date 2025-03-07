@@ -18,12 +18,25 @@
         environmentId: "000",
       };
 
-      setTimeout(() => {
+      const initializationIntervalId = setInterval(() => {
+        console.warn("Initializing...");
+
         iframe?.contentWindow?.postMessage(
           JSON.stringify(initializationData),
           "http://localhost:5173"
         );
-      }, 1 * 1000);
+      }, 100);
+
+      window.addEventListener("message", (event) => {
+        if (event.origin !== "http://localhost:5173") return;
+
+        const messageData = JSON.parse(event.data);
+
+        const isValidMessage = messageData.type === "INITIALIZED";
+        if (!isValidMessage) return;
+
+        clearInterval(initializationIntervalId);
+      });
     </script>
 
     <!-- Chatting -->
