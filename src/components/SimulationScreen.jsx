@@ -5,20 +5,16 @@ function useChats() {
   const [chats, setChats] = useState([]);
 
   useIframeListener((messageData) => {
-    if (messageData.type === "CHAT") {
-      const isValidMessage =
-        messageData.type === "CHAT" && typeof messageData.value === "string";
+    const isValidMessage =
+      messageData.type === "CHAT" && typeof messageData.value === "string";
 
-      if (!isValidMessage) {
-        alert(
-          `Invalid chat data: ${JSON.stringify(messageData, undefined, 2)}`
-        );
+    if (!isValidMessage) {
+      alert(`Invalid chat data: ${JSON.stringify(messageData, undefined, 2)}`);
 
-        return;
-      }
-
-      setChats((prevChats) => [...prevChats, messageData.value]);
+      return;
     }
+
+    setChats((prevChats) => [...prevChats, messageData.value]);
   });
 
   return chats;
