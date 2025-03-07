@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import InitialScreen from "./components/InitialScreen";
 import SimulationScreen from "./components/SimulationScreen";
-import originsConfig from "./config/origins";
+import useIframeListener from "./iframes/useIframeListener";
 
 function useSimulationData() {
   const [characterId, setCharacterId] = useState(null);
@@ -9,50 +9,32 @@ function useSimulationData() {
   const [environmentId, setEnvironmentId] = useState(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  useEffect(() => {
-    function listenForInitialization(event) {
-      if (isInitialized) return;
+  useIframeListener((messageData) => {
+    if (isInitialized) return;
 
-      const isEventOriginAllowed = originsConfig.ALLOWED_ORIGINS.includes(
-        event.origin
+    const isValidMessage =
+      messageData.type === "INITIALIZATION" &&
+      typeof messageData.characterId === "string" &&
+      typeof messageData.personalityId === "string" &&
+      typeof messageData.environmentId === "string";
+
+    if (!isValidMessage) {
+      alert(
+        `Invalid initialization data: ${JSON.stringify(
+          messageData,
+          undefined,
+          2
+        )}`
       );
 
-      if (!isEventOriginAllowed) {
-        alert(`Origin not allowed: ${event.origin}`);
-
-        return;
-      }
-
-      const messageData = JSON.parse(event.data);
-
-      const isValidMessage =
-        messageData.type === "INITIALIZATION" &&
-        typeof messageData.characterId === "string" &&
-        typeof messageData.personalityId === "string" &&
-        typeof messageData.environmentId === "string";
-
-      if (!isValidMessage) {
-        alert(
-          `Invalid initialization data: ${JSON.stringify(
-            messageData,
-            undefined,
-            2
-          )}`
-        );
-
-        return;
-      }
-
-      setCharacterId(messageData.characterId);
-      setPersonalityId(messageData.personalityId);
-      setEnvironmentId(messageData.environmentId);
-      setIsInitialized(true);
+      return;
     }
 
-    window.addEventListener("message", listenForInitialization);
-
-    return () => window.removeEventListener("message", listenForInitialization);
-  }, [isInitialized]);
+    setCharacterId(messageData.characterId);
+    setPersonalityId(messageData.personalityId);
+    setEnvironmentId(messageData.environmentId);
+    setIsInitialized(true);
+  });
 
   return { characterId, personalityId, environmentId };
 }

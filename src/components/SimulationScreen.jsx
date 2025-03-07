@@ -1,23 +1,11 @@
-import { useEffect, useState } from "react";
-import originsConfig from "../config/origins";
+import { useState } from "react";
+import useIframeListener from "../iframes/useIframeListener";
 
 function useChats() {
   const [chats, setChats] = useState([]);
 
-  useEffect(() => {
-    function listenForChats(event) {
-      const isEventOriginAllowed = originsConfig.ALLOWED_ORIGINS.includes(
-        event.origin
-      );
-
-      if (!isEventOriginAllowed) {
-        alert(`Origin not allowed: ${event.origin}`);
-
-        return;
-      }
-
-      const messageData = JSON.parse(event.data);
-
+  useIframeListener((messageData) => {
+    if (messageData.type === "CHAT") {
       const isValidMessage =
         messageData.type === "CHAT" && typeof messageData.value === "string";
 
@@ -31,11 +19,7 @@ function useChats() {
 
       setChats((prevChats) => [...prevChats, messageData.value]);
     }
-
-    window.addEventListener("message", listenForChats);
-
-    return () => window.removeEventListener("message", listenForChats);
-  }, []);
+  });
 
   return chats;
 }
