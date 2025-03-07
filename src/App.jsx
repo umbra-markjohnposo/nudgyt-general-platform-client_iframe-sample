@@ -36,7 +36,6 @@ function useSimulationData() {
     setEnvironmentId(messageData.environmentId);
     setIsInitialized(true);
 
-    console.warn({ parentOrigin });
     sendToIframeParent(parentOrigin, {
       type: "INITIALIZED",
     });
