@@ -23,7 +23,7 @@
           JSON.stringify(initializationData),
           "http://localhost:5173"
         );
-      }, 100);
+      }, 1 * 1000);
     </script>
 
     <!-- Chatting -->
@@ -46,6 +46,10 @@
     </script>
   </head>
   <body class="h-screen grid grid-cols-2 gap-6 p-6">
+    <div class="border-2 border-blue-500">
+      <iframe src="http://localhost:5173" class="w-full h-full"></iframe>
+    </div>
+
     <div class="border-2 border-red-500 p-3 space-y-3">
       <p>Sample controlling iframe and passing data</p>
 
@@ -54,10 +58,6 @@
 
         <button class="px-3 py-2 border-2 border-red-500">Send</button>
       </form>
-    </div>
-
-    <div class="border-2 border-blue-500">
-      <iframe src="http://localhost:5173"></iframe>
     </div>
   </body>
 </html>

@@ -1,0 +1,10 @@
+body {
+  margin: 0;
+}
+
+/* Initial screen: Black, fullscreen */
+main.initial {
+  background-color: black;
+
+  height: 100vh;
+}

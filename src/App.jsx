@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react";
-
-function InitialScreen() {
-  return <main>InitialScreen</main>;
-}
+import InitialScreen from "./InitialScreen";
 
 function SimulationScreen() {
   return <main>SimulationScreen</main>;
