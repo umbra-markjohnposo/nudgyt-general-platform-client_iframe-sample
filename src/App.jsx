@@ -15,10 +15,28 @@ function useSimulationData() {
 
   useEffect(() => {
     function listenForInitialization(event) {
-      const messageData = JSON.parse(event.data);
-
       if (!ALLOWED_ORIGINS.includes(event.origin)) {
         alert(`Origin not allowed: ${event.origin}`);
+
+        return;
+      }
+
+      const messageData = JSON.parse(event.data);
+
+      const isValidMessage =
+        messageData.type === "INITIALIZATION" &&
+        typeof messageData.characterId === "string" &&
+        typeof messageData.personalityId === "string" &&
+        typeof messageData.environmentId === "string";
+
+      if (!isValidMessage) {
+        alert(
+          `Invalid initialization data: ${JSON.stringify(
+            messageData,
+            undefined,
+            2
+          )}`
+        );
 
         return;
       }
