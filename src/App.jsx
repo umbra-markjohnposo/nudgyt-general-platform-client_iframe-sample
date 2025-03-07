@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import InitialScreen from "./InitialScreen";
-import SimulationScreen from "./SimulationScreen";
+import InitialScreen from "./components/InitialScreen";
+import SimulationScreen from "./components/SimulationScreen";
 import originsConfig from "./config/origins";
 
 function useSimulationData() {
