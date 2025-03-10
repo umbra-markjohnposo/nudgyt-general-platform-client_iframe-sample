@@ -35,7 +35,7 @@ function SimulationScreen({ characterId, personalityId, environmentId }) {
   useChatListener();
 
   return (
-    <main>
+    <main className="simulation">
       <header>Show simulation here (Three.js?)</header>
 
       <pre>

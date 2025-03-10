@@ -4,9 +4,14 @@ body {
   background-color: black;
 }
 
-/* Initial screen: Black, fullscreen */
+/* Initial screen: Fullscreen, black */
 main.initial {
-  background-color: black;
-
   height: 100vh;
+  background-color: black;
+}
+
+/* Simulation screen: Fullscreen, white */
+main.simulation {
+  height: 100vh;
+  background-color: white;
 }
