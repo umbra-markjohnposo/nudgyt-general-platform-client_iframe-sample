@@ -1,24 +1,38 @@
-import sendToIframeParent from "../iframes/sendToIframeParent";
-import useIframeListener from "../iframes/useIframeListener";
+import { useEffect } from "react";
 
 function useChatListener() {
-  useIframeListener((messageData, eventOrigin) => {
-    const isValidMessage =
-      messageData.type === "CHAT" && typeof messageData.value === "string";
+  useEffect(() => {
+    // Receive data from iframe parent
+    function receiveIframeMessage(event) {
+      const messageData = JSON.parse(event.data);
 
-    if (!isValidMessage) {
-      alert(`Invalid chat data: ${JSON.stringify(messageData, undefined, 2)}`);
+      const isValidMessage =
+        messageData.type === "CHAT" && typeof messageData.value === "string";
 
-      return;
+      if (!isValidMessage) {
+        alert(
+          `Invalid chat data: ${JSON.stringify(messageData, undefined, 2)}`
+        );
+
+        return;
+      }
+
+      const chat = messageData.value;
+
+      // Send data to iframe parent
+      window.parent.postMessage(
+        JSON.stringify({
+          type: "AI_RESPONSE",
+          value: `Sample AI response to: "${chat}"`,
+        }),
+        event.origin
+      );
     }
 
-    const chat = messageData.value;
+    window.addEventListener("message", receiveIframeMessage);
 
-    sendToIframeParent(eventOrigin, {
-      type: "AI_RESPONSE",
-      value: `Sample AI response to: "${chat}"`,
-    });
-  });
+    return () => window.removeEventListener("message", receiveIframeMessage);
+  }, []);
 }
 
 function SimulationScreen({ characterId, personalityId, environmentId }) {

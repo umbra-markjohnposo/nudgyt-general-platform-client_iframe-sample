@@ -1,8 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import InitialScreen from "./components/InitialScreen";
 import SimulationScreen from "./components/SimulationScreen";
-import sendToIframeParent from "./iframes/sendToIframeParent";
-import useIframeListener from "./iframes/useIframeListener";
 
 function useSimulationData() {
   const [characterId, setCharacterId] = useState(null);
@@ -10,36 +8,49 @@ function useSimulationData() {
   const [environmentId, setEnvironmentId] = useState(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  useIframeListener((messageData, eventOrigin) => {
-    if (isInitialized) return;
+  useEffect(() => {
+    // Receive data from iframe parent
+    function receiveIframeMessage(event) {
+      if (isInitialized) return;
 
-    const isValidMessage =
-      messageData.type === "INITIALIZATION" &&
-      typeof messageData.characterId === "string" &&
-      typeof messageData.personalityId === "string" &&
-      typeof messageData.environmentId === "string";
+      const messageData = JSON.parse(event.data);
 
-    if (!isValidMessage) {
-      alert(
-        `Invalid initialization data: ${JSON.stringify(
-          messageData,
-          undefined,
-          2
-        )}`
+      const isValidMessage =
+        messageData.type === "INITIALIZATION" &&
+        typeof messageData.characterId === "string" &&
+        typeof messageData.personalityId === "string" &&
+        typeof messageData.environmentId === "string";
+
+      if (!isValidMessage) {
+        alert(
+          `Invalid initialization data: ${JSON.stringify(
+            messageData,
+            undefined,
+            2
+          )}`
+        );
+
+        return;
+      }
+
+      setCharacterId(messageData.characterId);
+      setPersonalityId(messageData.personalityId);
+      setEnvironmentId(messageData.environmentId);
+      setIsInitialized(true);
+
+      // Send data to iframe parent
+      window.parent.postMessage(
+        JSON.stringify({
+          type: "INITIALIZED",
+        }),
+        event.origin
       );
-
-      return;
     }
 
-    setCharacterId(messageData.characterId);
-    setPersonalityId(messageData.personalityId);
-    setEnvironmentId(messageData.environmentId);
-    setIsInitialized(true);
+    window.addEventListener("message", receiveIframeMessage);
 
-    sendToIframeParent(eventOrigin, {
-      type: "INITIALIZED",
-    });
-  });
+    return () => window.removeEventListener("message", receiveIframeMessage);
+  }, [isInitialized]);
 
   return { characterId, personalityId, environmentId };
 }
