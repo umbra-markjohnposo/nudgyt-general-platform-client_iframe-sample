@@ -10,7 +10,7 @@ function useSimulationData() {
   const [environmentId, setEnvironmentId] = useState(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  useIframeListener((messageData, parentOrigin) => {
+  useIframeListener((messageData, eventOrigin) => {
     if (isInitialized) return;
 
     const isValidMessage =
@@ -36,7 +36,7 @@ function useSimulationData() {
     setEnvironmentId(messageData.environmentId);
     setIsInitialized(true);
 
-    sendToIframeParent(parentOrigin, {
+    sendToIframeParent(eventOrigin, {
       type: "INITIALIZED",
     });
   });

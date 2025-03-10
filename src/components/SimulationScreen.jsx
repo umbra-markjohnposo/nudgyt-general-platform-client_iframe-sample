@@ -6,7 +6,7 @@ function useChatListener() {
   const [parentOrigin, setParentOrigin] = useState(null);
   const [mostRecentChat, setMostRecentChat] = useState(null);
 
-  useIframeListener((messageData, parentOrigin) => {
+  useIframeListener((messageData, eventOrigin) => {
     const isValidMessage =
       messageData.type === "CHAT" && typeof messageData.value === "string";
 
@@ -17,7 +17,7 @@ function useChatListener() {
     }
 
     setMostRecentChat(messageData.value);
-    setParentOrigin(parentOrigin);
+    setParentOrigin(eventOrigin);
   });
 
   useEffect(() => {
